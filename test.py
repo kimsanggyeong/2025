@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Tuple, List
 
 # -----------------------------
 # Page Config
@@ -23,7 +22,7 @@ st.markdown(
 )
 
 # -----------------------------
-# MBTI / Temperament Utilities
+# MBTI 기본 데이터
 # -----------------------------
 MBTI_TYPES = [
     "INTJ","INTP","ENTJ","ENTP",
@@ -32,113 +31,40 @@ MBTI_TYPES = [
     "ISTP","ISFP","ESTP","ESFP",
 ]
 
-TEMPERAMENT = {
-    # NT
-    "INTJ":"NT","INTP":"NT","ENTJ":"NT","ENTP":"NT",
-    # NF
-    "INFJ":"NF","INFP":"NF","ENFJ":"NF","ENFP":"NF",
-    # SJ
-    "ISTJ":"SJ","ISFJ":"SJ","ESTJ":"SJ","ESFJ":"SJ",
-    # SP
-    "ISTP":"SP","ISFP":"SP","ESTP":"SP","ESFP":"SP",
-}
-
-def normalize_mbti(s: str) -> str:
-    if not s:
-        return ""
-    s = s.strip().upper()
-    valid = set(list("EISNTFJP"))
-    if len(s) != 4 or any(ch not in valid for ch in s):
-        return ""
-    return s
-
 # -----------------------------
-# Scoring Logic
+# 궁합 계산 함수
 # -----------------------------
-
-def mbti_pair_score(a: str, b: str) -> Tuple[int, List[str]]:
-    a = normalize_mbti(a)
-    b = normalize_mbti(b)
-    assert a and b and a in MBTI_TYPES and b in MBTI_TYPES
-
+def mbti_pair_score(a: str, b: str):
     base = 50
+    score = base
     reasons = []
 
-    pairs_bonus = 0
     for i, (x, y) in enumerate(zip(a, b)):
         if x == y:
-            pairs_bonus += 12
-            reasons.append(f"{i+1}번째 자리(\"{x}\")가 같아 두근두근✨")
+            score += 10
+            reasons.append(f"{i+1}번째 글자가 같아서 두근두근 ✨")
         else:
-            if i == 0:  # E/I
-                pairs_bonus += 6
-                reasons.append("E/I 보완으로 케미 뿜뿜 💫")
-            elif i == 1:  # S/N
-                pairs_bonus += 4
-                reasons.append("S/N 차이가 시야 확장에 도움 🌈")
-            elif i == 2:  # T/F
-                pairs_bonus += 6
-                reasons.append("T/F 보완으로 딱 맞는 하트💝")
-            elif i == 3:  # J/P
-                pairs_bonus += 6
-                reasons.append("J/P 보완으로 생활 리듬 쿵짝짝 🎶")
+            score += 5
+            reasons.append(f"{i+1}번째 글자가 달라서 색다른 케미 🌈")
 
-    score = base + pairs_bonus
+    return min(100, score), reasons
 
-    ta, tb = TEMPERAMENT[a], TEMPERAMENT[b]
-    if ta == tb:
-        score += 6
-        reasons.append(f"같은 기질({ta})라서 찰떡궁합 🍓")
-    else:
-        if {ta, tb} == {"NT", "NF"}:
-            score += 4
-            reasons.append("NT-NF 조합: 로맨틱한 비전 공유 🌟")
-        if {ta, tb} == {"SJ", "SP"}:
-            score += 4
-            reasons.append("SJ-SP 조합: 알콩달콩 균형 ✨")
-
-    if a == b:
-        score -= 4
-        reasons.append("너무 똑같아서 가끔 심심할 수도 있어요 🐻")
-
-    score = int(max(0, min(100, score)))
-
-    dedup = []
-    for r in reasons:
-        if r not in dedup:
-            dedup.append(r)
-    reasons = dedup[:4]
-
-    return score, reasons
-
-
-def name_bonus(n1: str, n2: str) -> Tuple[int, List[str]]:
-    if not n1 or not n2:
-        return 0, []
-    a = n1.strip()
-    b = n2.strip()
-    if not a or not b:
-        return 0, []
+def name_bonus(n1: str, n2: str):
     bonus = 0
     reasons = []
-
-    if a[0] == b[0]:
-        bonus += 3
-        reasons.append("첫 글자가 같아 찌릿찌릿 ⚡")
-    if a[-1] == b[-1]:
-        bonus += 4
-        reasons.append("끝 글자가 같아 심쿵 💘")
-    if (len(a) % 2) == (len(b) % 2):
-        bonus += 2
-        reasons.append("이름 길이 리듬이 맞아 귀여움 폭발 🐰")
-
+    if n1 and n2:
+        if n1[0] == n2[0]:
+            bonus += 5
+            reasons.append("첫 글자가 같아서 찌릿찌릿 ⚡")
+        if n1[-1] == n2[-1]:
+            bonus += 5
+            reasons.append("끝 글자가 같아서 심쿵 💘")
     return bonus, reasons
 
-
-def full_score_report(me_name: str, me_mbti: str, you_name: str, you_mbti: str):
+def full_score(me_name, me_mbti, you_name, you_mbti):
     mbti_score, mbti_reasons = mbti_pair_score(me_mbti, you_mbti)
     n_bonus, n_reasons = name_bonus(me_name, you_name)
-    total = int(max(0, min(100, mbti_score + n_bonus)))
+    total = min(100, mbti_score + n_bonus)
 
     if total >= 85:
         verdict = "💘💕 완전 찰떡궁합! 사랑 폭발 💕💘"
@@ -151,17 +77,10 @@ def full_score_report(me_name: str, me_mbti: str, you_name: str, you_mbti: str):
     else:
         verdict = "💔 귀여운 티키타카 연습이 필요해요 💔"
 
-    return {
-        "mbti_score": mbti_score,
-        "name_bonus": n_bonus,
-        "total": total,
-        "verdict": verdict,
-        "mbti_reasons": mbti_reasons,
-        "name_reasons": n_reasons,
-    }
+    return total, verdict, mbti_reasons, n_reasons
 
 # -----------------------------
-# UI – Inputs
+# UI 입력
 # -----------------------------
 col1, col2 = st.columns(2)
 with col1:
@@ -171,51 +90,27 @@ with col2:
     you_name = st.text_input("상대 이름 🐻", value="")
     you_mbti = st.selectbox("상대 MBTI 🌟", MBTI_TYPES, index=0)
 
-st.markdown("—")
-run = st.button("✨🔮 궁합 보기 🔮✨")
-
-# -----------------------------
-# Validation
-# -----------------------------
-if run:
-    if not (me_mbti in MBTI_TYPES and you_mbti in MBTI_TYPES):
-        st.error("MBTI 입력이 올바르지 않습니다. 예: ENFP, ISTJ …")
+if st.button("✨🔮 궁합 보기 🔮✨"):
+    if me_mbti not in MBTI_TYPES or you_mbti not in MBTI_TYPES:
+        st.error("MBTI 입력이 올바르지 않습니다.")
     else:
-        report = full_score_report(me_name, me_mbti, you_name, you_mbti)
+        total, verdict, mbti_reasons, n_reasons = full_score(me_name, me_mbti, you_name, you_mbti)
+
         st.subheader("💞 결과 💞")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("MBTI 점수", f"{report['mbti_score']}")
-        c2.metric("이름 보너스", f"+{report['name_bonus']}")
-        c3.metric("최종 점수", f"{report['total']}")
-        st.success(report["verdict"])        
+        st.metric("최종 점수", f"{total}")
+        st.success(verdict)
 
         with st.expander("🌈 궁합 설명 보기"):
             st.markdown("**💌 MBTI 근거**")
-            for r in report["mbti_reasons"]:
+            for r in mbti_reasons:
                 st.write("- ", r)
-            if report["name_reasons"]:
+            if n_reasons:
                 st.markdown("**🎀 이름 보너스**")
-                for r in report["name_reasons"]:
+                for r in n_reasons:
                     st.write("- ", r)
 
-        with st.expander("💡 러브 팁"):
-            tips = []
-            a, b = me_mbti, you_mbti
-            if a[0] != b[0]:
-                tips.append("에너지 충전 방식(E/I)이 달라요 🌞🌙 균형 잡기!")
-            if a[1] != b[1]:
-                tips.append("정보 처리(S/N)가 달라요 🔍🌌 다양하게 공유!")
-            if a[2] != b[2]:
-                tips.append("의사결정(T/F)이 달라요 🧠💗 함께 고려!")
-            if a[3] != b[3]:
-                tips.append("생활 템포(J/P)가 달라요 📅🎉 유연하게!")
-            if not tips:
-                tips.append("둘이 닮아 있어서 귀엽고 푹 빠질 조합! 💕")
-            for t in tips:
-                st.write("- ", t)
-
 # -----------------------------
-# Full 16×16 Compatibility Table
+# 전체 궁합표
 # -----------------------------
 with st.expander("📊 전체 16×16 MBTI 궁합표 보기"):
     data = np.zeros((16, 16), dtype=int)
@@ -224,7 +119,7 @@ with st.expander("📊 전체 16×16 MBTI 궁합표 보기"):
             data[i, j] = mbti_pair_score(a, b)[0]
     df = pd.DataFrame(data, index=MBTI_TYPES, columns=MBTI_TYPES)
 
-    st.dataframe(df.style.format("{}"))
+    st.dataframe(df)
 
     fig, ax = plt.subplots(figsize=(6.5, 5.5))
     im = ax.imshow(df.values, aspect='auto')
@@ -232,13 +127,13 @@ with st.expander("📊 전체 16×16 MBTI 궁합표 보기"):
     ax.set_yticks(range(len(MBTI_TYPES)))
     ax.set_xticklabels(MBTI_TYPES, rotation=45, ha='right')
     ax.set_yticklabels(MBTI_TYPES)
-    ax.set_title("🌸 MBTI 궁합표 (이름 보너스 제외) 🌸")
+    ax.set_title("🌸 MBTI 궁합표 🌸")
     plt.tight_layout()
     st.pyplot(fig)
 
     csv = df.to_csv(index=True).encode('utf-8-sig')
     st.download_button(
-        label="⬇️ 귀여운 CSV 다운로드 🎀",
+        label="⬇️ CSV 다운로드 🎀",
         data=csv,
         file_name="mbti_compatibility_table.csv",
         mime="text/csv",
