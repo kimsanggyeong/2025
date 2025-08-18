@@ -5,7 +5,7 @@ import random
 st.set_page_config(page_title="✨ 오하아사 별자리 운세 💖", page_icon="🌟", layout="centered")
 
 st.markdown("""
-# 🌸 오늘의 오하아사 🌸
+# 🌸 오늘의 오하아사 별자리 운세 🌸
 생일을 입력하면 오늘의 귀엽고 깜찍한 운세를 확인할 수 있어요! 🐰💫
 """)
 
@@ -79,7 +79,7 @@ def generate_fortune(zodiac):
     }
 
 # -----------------------------
-# 오하아사 순위 생성
+# 오하아사 순위 생성 (오늘 날짜 기준 고정)
 # -----------------------------
 def generate_rankings():
     zodiacs = ["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리",
@@ -96,6 +96,10 @@ month = birth_date.month
 day = birth_date.day
 zodiac = get_zodiac(month, day)
 st.subheader(f"🌟 당신의 별자리: {zodiac} 🌟")
+
+# 오늘 날짜로 랜덤 시드 고정 (순위 고정용)
+today = datetime.today().strftime("%Y-%m-%d")
+random.seed(today)
 
 # 운세 생성
 fortune = generate_fortune(zodiac)
