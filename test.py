@@ -4,8 +4,10 @@ import random
 
 st.set_page_config(page_title="✨ 오하아사 별자리 운세 💖", page_icon="🌟", layout="centered")
 
-st.title("🌸 오늘의 오하아사 별자리 운세 🌸")
-st.markdown("생일을 입력하면 오늘의 귀엽고 깜찍한 운세를 알려드려요! 🐰💫")
+st.markdown("""
+# 🌸 오늘의 오하아사 별자리 운세 🌸
+생일을 입력하면 오늘의 귀엽고 깜찍한 운세를 확인할 수 있어요! 🐰💫
+""")
 
 # -----------------------------
 # 별자리 계산
@@ -33,42 +35,91 @@ def get_zodiac(month, day):
     return "염소자리"
 
 # -----------------------------
-# 귀여운 운세 생성
+# 운세 생성
 # -----------------------------
-def cute_ohasa_fortune(zodiac):
-    fortunes = ["💖 대박 행운!", "💛 기분 좋은 하루!", "💚 작은 행복 가득!", "💜 오늘은 집중 💫", "💙 사랑이 넘치는 하루!"]
-    love = ["💌 연애운 상승!", "💘 썸타기 좋은 날!", "💞 마음이 통하는 하루!", "💖 귀여운 티키타카 💖", "💓 혼자만의 시간도 즐거워요"]
-    money = ["💰 용돈 벌기 좋은 날!", "💵 알뜰하게!", "💎 쇼핑은 신중하게", "🪙 행운의 재물", "💳 카드 사용 조심!"]
-    health = ["🍀 활기찬 하루!", "🏃‍♀️ 운동 추천!", "🥗 건강식 챙기기", "😴 충분한 휴식 필요", "💪 기운 충전!"]
-    items = ["⭐ 행운의 별", "🍓 딸기", "🧸 작은 인형", "🎀 리본", "💎 반짝이는 보석"]
-
+def generate_fortune(zodiac):
+    total_texts = [
+        f"{zodiac}님, 오늘 하루는 귀여운 일들로 가득해요! 🌸😊",
+        f"작은 행복을 발견할 수 있는 날이에요 💖✨",
+        f"오늘은 마음이 두근두근 설레는 일이 있을지도 몰라요 🐰💕",
+        f"{zodiac}의 매력이 반짝이는 하루가 될 거예요 🌟💗"
+    ]
+    love_texts = [
+        "💌 연애운: 오늘은 솔직한 마음 표현이 통하는 날이에요 💖",
+        "💘 썸타기 좋은 기운! 귀여운 메시지를 보내보세요 🐰💌",
+        "💞 마음이 통하는 순간이 찾아올 거예요 💕",
+        "💖 친구와의 우정도 사랑으로 느껴질 수 있어요 ✨"
+    ]
+    money_texts = [
+        "💰 금전운: 소소한 행운이 찾아오는 날! 🍀",
+        "💵 작은 저축이 큰 기쁨으로 돌아올 거예요 💖",
+        "🪙 지출은 신중하게, 행운은 가까이에 있어요 ✨",
+        "💳 계획적인 소비가 기분까지 행복하게 만들어요 🐰"
+    ]
+    health_texts = [
+        "🍀 건강운: 활기찬 하루! 가벼운 산책 추천 🌸",
+        "🏃‍♀️ 운동하면 스트레스가 훨씬 줄어들어요 💪",
+        "🥗 균형 잡힌 식사와 충분한 수면이 중요해요 😴",
+        "💪 기운 충전! 작은 운동이나 스트레칭으로 하루를 시작하세요 🐰"
+    ]
+    items = [
+        ("⭐ 행운의 별", "오늘은 이 별을 가방에 넣고 다니며 소원을 빌어보세요 🌟"),
+        ("🍓 딸기", "딸기 그림이나 사진을 보면 귀여운 기운이 늘어나요 🍓💖"),
+        ("🧸 작은 인형", "작은 인형을 손에 쥐고 하루를 보내면 안정감이 생겨요 🐻"),
+        ("🎀 리본", "옷이나 소지품에 리본을 달고 다니며 기분을 업! 🎀"),
+        ("💎 반짝이는 보석", "반짝이는 물건을 바라보며 자신감을 충전하세요 💎✨")
+    ]
+    
     return {
-        "총운": random.choice(fortunes),
-        "사랑운": random.choice(love),
-        "금전운": random.choice(money),
-        "건강운": random.choice(health),
+        "총운": random.choice(total_texts),
+        "사랑운": random.choice(love_texts),
+        "금전운": random.choice(money_texts),
+        "건강운": random.choice(health_texts),
         "행운아이템": random.choice(items)
     }
+
+# -----------------------------
+# 오하아사 순위 생성
+# -----------------------------
+def generate_rankings():
+    zodiacs = ["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리",
+               "전갈자리","사수자리","염소자리","물병자리","물고기자리"]
+    random.shuffle(zodiacs)
+    rankings = {i+1: z for i, z in enumerate(zodiacs)}
+    return rankings
 
 # -----------------------------
 # UI 입력
 # -----------------------------
 birth_date = st.date_input("🎂 생일을 입력해주세요", value=datetime(2000,1,1))
-
 month = birth_date.month
 day = birth_date.day
 zodiac = get_zodiac(month, day)
 st.subheader(f"🌟 당신의 별자리: {zodiac} 🌟")
 
-fortune = cute_ohasa_fortune(zodiac)
+# 운세 생성
+fortune = generate_fortune(zodiac)
 st.markdown(f"**총운:** {fortune['총운']}")
 st.markdown(f"**사랑운:** {fortune['사랑운']}")
 st.markdown(f"**금전운:** {fortune['금전운']}")
 st.markdown(f"**건강운:** {fortune['건강운']}")
-st.markdown(f"**오늘의 행운아이템:** {fortune['행운아이템']} 🎀")
+
+# 행운 아이템
+item_name, item_tip = fortune['행운아이템']
+st.markdown(f"**오늘의 행운아이템:** {item_name} 🎀")
+st.markdown(f"💡 활용 팁: {item_tip}")
 
 # -----------------------------
-# 귀여운 별자리 이미지
+# 오하아사 순위 표시
+# -----------------------------
+st.subheader("🏆 오늘의 오하아사 별자리 순위 🏆")
+rankings = generate_rankings()
+for rank, z in rankings.items():
+    medal = "🥇" if rank == 1 else "🥈" if rank == 2 else "🥉" if rank == 3 else "✨"
+    st.markdown(f"{medal} {rank}위: {z}")
+
+# -----------------------------
+# 별자리 이미지
 # -----------------------------
 zodiac_images = {
     "양자리": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Aries_symbol.svg",
@@ -84,6 +135,6 @@ zodiac_images = {
     "물병자리": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Aquarius_symbol.svg",
     "물고기자리": "https://upload.wikimedia.org/wikipedia/commons/3/36/Pisces_symbol.svg",
 }
-
 st.image(zodiac_images[zodiac], width=150, caption=f"{zodiac} 이미지 🐰✨")
+
 st.caption("※ 이 운세는 재미로 보는 오하아사 스타일 운세입니다 💖")
