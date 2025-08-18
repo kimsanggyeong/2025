@@ -1,142 +1,89 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+from datetime import datetime
+import random
+
+st.set_page_config(page_title="✨ 오하아사 별자리 운세 💖", page_icon="🌟", layout="centered")
+
+st.title("🌸 오늘의 오하아사 별자리 운세 🌸")
+st.markdown("생일을 입력하면 오늘의 귀엽고 깜찍한 운세를 알려드려요! 🐰💫")
 
 # -----------------------------
-# Page Config
+# 별자리 계산
 # -----------------------------
-st.set_page_config(page_title="💞 이름+MBTI 궁합 보기", page_icon="✨", layout="centered")
-
-st.title("✨💖 이름 + MBTI 궁합 보기 💖✨")
-st.markdown(
-    """
-    두 사람의 **이름**과 **MBTI**로 궁합 점수를 계산해드려요! (｡♥‿♥｡)
-    
-    - 귀엽고 깜찍한 **러브 케미 테스트** 💕
-    - MBTI 16가지 전 조합을 기반으로 계산 ✨
-    - 이름으로 소소한 보너스 점수까지 추가 🎁
-    
-    👉 결과는 **0~100점** 사이이며, 귀여운 설명과 함께 나옵니다! 🐰
-    """
-)
-
-# -----------------------------
-# MBTI 기본 데이터
-# -----------------------------
-MBTI_TYPES = [
-    "INTJ","INTP","ENTJ","ENTP",
-    "INFJ","INFP","ENFJ","ENFP",
-    "ISTJ","ISFJ","ESTJ","ESFJ",
-    "ISTP","ISFP","ESTP","ESFP",
-]
+def get_zodiac(month, day):
+    zodiac = [
+        ("염소자리", (12, 22), (1, 19)),
+        ("물병자리", (1, 20), (2, 18)),
+        ("물고기자리", (2, 19), (3, 20)),
+        ("양자리", (3, 21), (4, 19)),
+        ("황소자리", (4, 20), (5, 20)),
+        ("쌍둥이자리", (5, 21), (6, 20)),
+        ("게자리", (6, 21), (7, 22)),
+        ("사자자리", (7, 23), (8, 22)),
+        ("처녀자리", (8, 23), (9, 22)),
+        ("천칭자리", (9, 23), (10, 22)),
+        ("전갈자리", (10, 23), (11, 21)),
+        ("사수자리", (11, 22), (12, 21)),
+    ]
+    for name, start, end in zodiac:
+        start_month, start_day = start
+        end_month, end_day = end
+        if (month == start_month and day >= start_day) or (month == end_month and day <= end_day):
+            return name
+    return "염소자리"
 
 # -----------------------------
-# 궁합 계산 함수
+# 귀여운 운세 생성
 # -----------------------------
-def mbti_pair_score(a: str, b: str):
-    base = 50
-    score = base
-    reasons = []
+def cute_ohasa_fortune(zodiac):
+    fortunes = ["💖 대박 행운!", "💛 기분 좋은 하루!", "💚 작은 행복 가득!", "💜 오늘은 집중 💫", "💙 사랑이 넘치는 하루!"]
+    love = ["💌 연애운 상승!", "💘 썸타기 좋은 날!", "💞 마음이 통하는 하루!", "💖 귀여운 티키타카 💖", "💓 혼자만의 시간도 즐거워요"]
+    money = ["💰 용돈 벌기 좋은 날!", "💵 알뜰하게!", "💎 쇼핑은 신중하게", "🪙 행운의 재물", "💳 카드 사용 조심!"]
+    health = ["🍀 활기찬 하루!", "🏃‍♀️ 운동 추천!", "🥗 건강식 챙기기", "😴 충분한 휴식 필요", "💪 기운 충전!"]
+    items = ["⭐ 행운의 별", "🍓 딸기", "🧸 작은 인형", "🎀 리본", "💎 반짝이는 보석"]
 
-    for i, (x, y) in enumerate(zip(a, b)):
-        if x == y:
-            score += 10
-            reasons.append(f"{i+1}번째 글자가 같아서 두근두근 ✨")
-        else:
-            score += 5
-            reasons.append(f"{i+1}번째 글자가 달라서 색다른 케미 🌈")
-
-    return min(100, score), reasons
-
-def name_bonus(n1: str, n2: str):
-    bonus = 0
-    reasons = []
-    if n1 and n2:
-        if n1[0] == n2[0]:
-            bonus += 5
-            reasons.append("첫 글자가 같아서 찌릿찌릿 ⚡")
-        if n1[-1] == n2[-1]:
-            bonus += 5
-            reasons.append("끝 글자가 같아서 심쿵 💘")
-    return bonus, reasons
-
-def full_score(me_name, me_mbti, you_name, you_mbti):
-    mbti_score, mbti_reasons = mbti_pair_score(me_mbti, you_mbti)
-    n_bonus, n_reasons = name_bonus(me_name, you_name)
-    total = min(100, mbti_score + n_bonus)
-
-    if total >= 85:
-        verdict = "💘💕 완전 찰떡궁합! 사랑 폭발 💕💘"
-    elif total >= 70:
-        verdict = "🌸💖 좋은 케미! 알콩달콩 사랑스러워요 💖🌸"
-    elif total >= 55:
-        verdict = "💛 무난무난~ 노력하면 더 귀여운 커플 💛"
-    elif total >= 40:
-        verdict = "💙 서로 다르지만 그게 또 매력! 💙"
-    else:
-        verdict = "💔 귀여운 티키타카 연습이 필요해요 💔"
-
-    return total, verdict, mbti_reasons, n_reasons
+    return {
+        "총운": random.choice(fortunes),
+        "사랑운": random.choice(love),
+        "금전운": random.choice(money),
+        "건강운": random.choice(health),
+        "행운아이템": random.choice(items)
+    }
 
 # -----------------------------
 # UI 입력
 # -----------------------------
-col1, col2 = st.columns(2)
-with col1:
-    me_name = st.text_input("내 이름 🐰", value="")
-    me_mbti = st.selectbox("내 MBTI 🌸", MBTI_TYPES, index=7)
-with col2:
-    you_name = st.text_input("상대 이름 🐻", value="")
-    you_mbti = st.selectbox("상대 MBTI 🌟", MBTI_TYPES, index=0)
+birth_date = st.date_input("🎂 생일을 입력해주세요", value=datetime(2000,1,1))
 
-if st.button("✨🔮 궁합 보기 🔮✨"):
-    if me_mbti not in MBTI_TYPES or you_mbti not in MBTI_TYPES:
-        st.error("MBTI 입력이 올바르지 않습니다.")
-    else:
-        total, verdict, mbti_reasons, n_reasons = full_score(me_name, me_mbti, you_name, you_mbti)
+month = birth_date.month
+day = birth_date.day
+zodiac = get_zodiac(month, day)
+st.subheader(f"🌟 당신의 별자리: {zodiac} 🌟")
 
-        st.subheader("💞 결과 💞")
-        st.metric("최종 점수", f"{total}")
-        st.success(verdict)
-
-        with st.expander("🌈 궁합 설명 보기"):
-            st.markdown("**💌 MBTI 근거**")
-            for r in mbti_reasons:
-                st.write("- ", r)
-            if n_reasons:
-                st.markdown("**🎀 이름 보너스**")
-                for r in n_reasons:
-                    st.write("- ", r)
+fortune = cute_ohasa_fortune(zodiac)
+st.markdown(f"**총운:** {fortune['총운']}")
+st.markdown(f"**사랑운:** {fortune['사랑운']}")
+st.markdown(f"**금전운:** {fortune['금전운']}")
+st.markdown(f"**건강운:** {fortune['건강운']}")
+st.markdown(f"**오늘의 행운아이템:** {fortune['행운아이템']} 🎀")
 
 # -----------------------------
-# 전체 궁합표
+# 귀여운 별자리 이미지
 # -----------------------------
-with st.expander("📊 전체 16×16 MBTI 궁합표 보기"):
-    data = np.zeros((16, 16), dtype=int)
-    for i, a in enumerate(MBTI_TYPES):
-        for j, b in enumerate(MBTI_TYPES):
-            data[i, j] = mbti_pair_score(a, b)[0]
-    df = pd.DataFrame(data, index=MBTI_TYPES, columns=MBTI_TYPES)
+zodiac_images = {
+    "양자리": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Aries_symbol.svg",
+    "황소자리": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Taurus_symbol.svg",
+    "쌍둥이자리": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Gemini_symbol.svg",
+    "게자리": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Cancer_symbol.svg",
+    "사자자리": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Leo_symbol.svg",
+    "처녀자리": "https://upload.wikimedia.org/wikipedia/commons/6/64/Virgo_symbol.svg",
+    "천칭자리": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Libra_symbol.svg",
+    "전갈자리": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Scorpio_symbol.svg",
+    "사수자리": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Sagittarius_symbol.svg",
+    "염소자리": "https://upload.wikimedia.org/wikipedia/commons/7/76/Capricorn_symbol.svg",
+    "물병자리": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Aquarius_symbol.svg",
+    "물고기자리": "https://upload.wikimedia.org/wikipedia/commons/3/36/Pisces_symbol.svg",
+}
 
-    st.dataframe(df)
-
-    fig, ax = plt.subplots(figsize=(6.5, 5.5))
-    im = ax.imshow(df.values, aspect='auto')
-    ax.set_xticks(range(len(MBTI_TYPES)))
-    ax.set_yticks(range(len(MBTI_TYPES)))
-    ax.set_xticklabels(MBTI_TYPES, rotation=45, ha='right')
-    ax.set_yticklabels(MBTI_TYPES)
-    ax.set_title("🌸 MBTI 궁합표 🌸")
-    plt.tight_layout()
-    st.pyplot(fig)
-
-    csv = df.to_csv(index=True).encode('utf-8-sig')
-    st.download_button(
-        label="⬇️ CSV 다운로드 🎀",
-        data=csv,
-        file_name="mbti_compatibility_table.csv",
-        mime="text/csv",
-    )
-
-st.caption("※ 이 앱은 귀여운 오락/참고용이에요! 실제 관계는 소통과 사랑이 중요합니다 🐰💝")
+st.image(zodiac_images[zodiac], width=150, caption=f"{zodiac} 이미지 🐰✨")
+st.caption("※ 이 운세는 재미로 보는 오하아사 스타일 운세입니다 💖")
