@@ -49,7 +49,7 @@ ohasa_data = {
 st.set_page_config(page_title="오하아사 별자리 운세", page_icon="🌅", layout="centered")
 
 st.markdown(
-    "<h1 style='text-align:center; color:#FF69B4;'>🌅 오늘의 오하아사 별자리 운세 🌅</h1>",
+    "<h1 style='text-align:center; color:#FF69B4;'>🌅 오늘의 오하아사 🌅</h1>",
     unsafe_allow_html=True
 )
 
