@@ -26,31 +26,47 @@ def get_zodiac(month, day):
     return "알 수 없음"
 
 # -------------------------
-# 오늘의 운세 데이터
+# 오늘의 운세 데이터 (여러 개 준비 → 매일 다르게)
 # -------------------------
 horoscope_data = {
-    "물병자리": "새로운 아이디어가 떠오르는 하루! 💡",
-    "물고기자리": "마음이 따뜻해지는 하루가 될 거예요. 🌊",
-    "양자리": "도전정신이 빛나는 날! 🔥",
-    "황소자리": "꾸준함이 큰 힘을 발휘해요. 🐂",
-    "쌍둥이자리": "대화 속에서 행운이 숨어있어요. 💬",
-    "게자리": "가족이나 친구와의 시간이 소중해요. 🦀",
-    "사자자리": "자신감을 가지면 좋은 결과가 와요. 🦁",
-    "처녀자리": "세심함이 당신을 빛나게 해요. 🌸",
-    "천칭자리": "균형 잡힌 하루, 조화가 필요해요. ⚖️",
-    "전갈자리": "집중력이 높아 성과가 커져요. 🦂",
-    "사수자리": "여행이나 모험이 행운을 가져와요. 🏹",
-    "염소자리": "성실함이 빛나는 하루예요. ⛰️"
+    "물병자리": [
+        "새로운 아이디어가 떠오르는 하루! 💡",
+        "좋은 소식을 듣게 될 거예요 📩",
+        "주변 사람에게 친절하게 대하면 행운이 와요 🌈"
+    ],
+    "물고기자리": [
+        "마음이 따뜻해지는 하루가 될 거예요 🌊",
+        "작은 배려가 큰 기쁨을 가져와요 🌟",
+        "오늘은 직감이 놀랍도록 잘 맞아요 🔮"
+    ],
+    "양자리": [
+        "도전정신이 빛나는 날! 🔥",
+        "용기를 내면 좋은 일이 생겨요 💪",
+        "새로운 시작이 좋은 결과로 이어져요 🌱"
+    ],
+    # (다른 별자리들도 3개씩 넣어주면 좋아요)
 }
 
-lucky_items = ["🍎 사과", "☕ 커피", "📖 책", "🎧 이어폰", "🌂 우산", "🍀 네잎클로버", "🧸 인형", "💄 립밤", "🍫 초콜릿", "🕶️ 선글라스"]
-good_things = ["친구에게 연락하기", "일찍 일어나기", "작은 선물하기", "산책하기", "좋아하는 음악 듣기", "웃는 얼굴 유지하기", "하루 계획 세우기"]
+# 행운 아이템 + 사용법
+lucky_items = {
+    "🍎 사과": "오늘은 사과를 먹으면 활력이 넘쳐나요!",
+    "☕ 커피": "새로운 사람과 커피를 마시면 좋은 일이 생겨요!",
+    "📖 책": "책에서 영감을 얻어보세요, 좋은 아이디어가 떠오를 거예요!",
+    "🎧 이어폰": "좋아하는 음악을 들으면 기분이 한층 밝아져요!",
+    "🌂 우산": "비가 오지 않아도 우산을 챙기면 뜻밖의 행운이 와요!",
+    "🍀 네잎클로버": "지갑에 넣어두면 하루가 반짝 빛날 거예요!",
+    "🧸 인형": "인형과 함께 있으면 마음이 따뜻해져요!",
+    "💄 립밤": "립밤을 바르면 좋은 인연이 다가와요!",
+    "🍫 초콜릿": "친구에게 나눠주면 행복이 두 배가 돼요!",
+    "🕶️ 선글라스": "햇살 아래에서 자신감이 빛나요!"
+}
 
 # -------------------------
-# 오늘 날짜 기반 별자리 순위 (고정)
+# 오늘 날짜 기반 랜덤 고정
 # -------------------------
 today = datetime.date.today()
-random.seed(today.toordinal())  # 날짜 기준 고정된 순위
+random.seed(today.toordinal())  # 날짜 기준 고정
+
 zodiac_list = list(horoscope_data.keys())
 random.shuffle(zodiac_list)
 
@@ -68,17 +84,20 @@ if birth:
     zodiac = get_zodiac(birth.month, birth.day)
     st.subheader(f"🌟 당신의 별자리는 **{zodiac}** 입니다! 🌟")
 
-    # 운세 보여주기
+    # 오늘의 운세 (여러 개 중 랜덤)
+    if zodiac in horoscope_data:
+        daily_fortune = random.choice(horoscope_data[zodiac])
+    else:
+        daily_fortune = "오늘은 특별한 하루가 될 거예요 ✨"
+    
     st.markdown(f"<h3 style='color:#FF82AB;'>🔮 오늘의 운세:</h3>", unsafe_allow_html=True)
-    st.info(horoscope_data[zodiac])
+    st.info(daily_fortune)
 
     # 오늘의 순위
     rank = zodiac_list.index(zodiac) + 1
     st.markdown(f"<h3 style='color:#9370DB;'>🏆 오늘의 별자리 순위: {rank}위</h3>", unsafe_allow_html=True)
 
-    # 행운 아이템 & 좋은 행동
-    lucky_item = random.choice(lucky_items)
-    good_thing = random.choice(good_things)
-
-    st.success(f"🎁 행운의 아이템: {lucky_item}")
-    st.warning(f"💡 오늘 하면 좋은 일: {good_thing}")
+    # 오늘의 행운 아이템
+    lucky_item, usage = random.choice(list(lucky_items.items()))
+    st.success(f"🎁 오늘의 행운 아이템: {lucky_item}")
+    st.warning(f"✨ 행운을 부르는 사용법: {usage}")
