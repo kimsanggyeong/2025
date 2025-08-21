@@ -59,7 +59,7 @@ random.shuffle(zodiac_list)
 # -------------------------
 st.set_page_config(page_title="오늘의 별자리 운세 (오하아사)", page_icon="✨", layout="centered")
 
-st.markdown("<h1 style='text-align:center; color:#FF69B4;'>✨ 오늘의 별자리 운세 (오하아사) ✨</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center; color:#FF69B4;'>✨ 오늘의 오하아사 ✨</h1>", unsafe_allow_html=True)
 st.write("생일을 입력하면 오늘의 별자리 운세와 순위를 확인할 수 있어요! 🎀")
 
 birth = st.date_input("🎂 나의 생일을 입력하세요:", datetime.date(2000, 1, 1))
