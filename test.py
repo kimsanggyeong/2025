@@ -31,7 +31,7 @@ ohasa_data = [
 st.set_page_config(page_title="오하아사 별자리 운세", page_icon="🌅", layout="centered")
 
 st.markdown(f"<h1 style='text-align:center; color:#FF69B4;'>🌅 오늘의 오하아사 🌅</h1>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align:center; font-size:18px;'>📺 일본 아침 방송 <b>오하아사</b> 스타일로 즐겨보세요!<br>오늘 날짜: {today}</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; font-size:18px;'><br>오늘 날짜: {today}</p>", unsafe_allow_html=True)
 
 # -------------------------
 # 내 별자리 입력
