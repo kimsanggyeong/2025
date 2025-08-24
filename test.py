@@ -55,7 +55,7 @@ st.set_page_config(page_title="오하아사 별자리 운세", page_icon="🌅",
 st.markdown(
     f"""
     <h1 style='text-align:center; color:#FF69B4;'>
-        🌅 오늘의 오하아사 별자리 운세 🌅
+        🌅 오늘의 오하아사 🌅
     </h1>
     <p style='text-align:center; font-size:18px;'>
         오늘 날짜: {today}
