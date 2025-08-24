@@ -58,7 +58,6 @@ st.markdown(
         🌅 오늘의 오하아사 별자리 운세 🌅
     </h1>
     <p style='text-align:center; font-size:18px;'>
-        📺 일본 아침 방송 <b>오하아사</b> 스타일 운세 ✨<br>
         오늘 날짜: {today}
     </p>
     """, unsafe_allow_html=True
