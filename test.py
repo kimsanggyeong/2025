@@ -96,7 +96,7 @@ def parse_rank_text(raw:str) -> List[Dict]:
 # =============================
 st.markdown(
     f"""
-    <h1 style='text-align:center; color:#FF69B4;'>🌅 오늘의 오하아사</h1>
+    <h1 style='text-align:center; color:#FF69B4;'>🌅 오늘의 오하아사 🌅</h1>
     <p style='text-align:center;' class='muted'>오늘 날짜: {TODAY_KR}</p>
     """, unsafe_allow_html=True
 )
